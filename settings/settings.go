@@ -36,7 +36,7 @@ func init() {
 		WebAddr = ":9921"
 	}
 
-	if LogLevel, ok = os.LookupEnv(variables[2]); !ok {
+	if LogLevel, ok = os.LookupEnv(variables[3]); !ok {
 		LogLevel = "info"
 	}
 
