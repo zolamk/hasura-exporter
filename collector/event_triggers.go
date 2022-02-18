@@ -69,7 +69,7 @@ func (c *EventTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 	var err error
 
-	query_api_url := fmt.Sprintf("%s/v2/query", settings.HasuraGraphQLURL)
+	query_api_url := fmt.Sprintf("%s/v2/query", settings.HasuraGraphQLEndpoint)
 
 	body, _ := json.Marshal(map[string]interface{}{
 		"type": "bulk",

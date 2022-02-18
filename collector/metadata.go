@@ -42,7 +42,7 @@ func (c *MetadataCollector) Collect(ch chan<- prometheus.Metric) {
 
 	var err error
 
-	metadata_api_url := fmt.Sprintf("%s/v1/metadata", settings.HasuraGraphQLURL)
+	metadata_api_url := fmt.Sprintf("%s/v1/metadata", settings.HasuraGraphQLEndpoint)
 
 	body, _ := json.Marshal(map[string]interface{}{
 		"type": "get_inconsistent_metadata",

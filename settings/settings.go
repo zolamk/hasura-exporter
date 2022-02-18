@@ -8,12 +8,10 @@ import (
 )
 
 var (
-	HasuraAdminSecret string
-	HasuraGraphQLURL  string
-	WebPath           string
-	WebAddr           string
-	LogLevel          string
-	Debug             bool
+	HasuraAdminSecret     string
+	HasuraGraphQLEndpoint string
+	WebAddr               string
+	LogLevel              string
 )
 
 func init() {
@@ -22,7 +20,7 @@ func init() {
 
 	godotenv.Load()
 
-	variables := []string{"HASURA_GRAPHQL_ADMIN_SECRET", "HASURA_GRAPHQL_URL", "WEB_PATH", "WEB_ADDR", "LOG_LEVEL"}
+	variables := []string{"HASURA_GRAPHQL_ADMIN_SECRET", "HASURA_GRAPHQL_ENDPOINT", "WEB_ADDR", "LOG_LEVEL"}
 
 	for _, v := range variables {
 		if _, ok := os.LookupEnv(v); !ok {
@@ -32,13 +30,13 @@ func init() {
 
 	HasuraAdminSecret = os.Getenv(variables[0])
 
-	HasuraGraphQLURL = os.Getenv(variables[1])
+	HasuraGraphQLEndpoint = os.Getenv(variables[1])
 
-	WebPath = os.Getenv(variables[2])
+	if WebAddr, ok = os.LookupEnv(variables[2]); !ok {
+		WebAddr = ":9921"
+	}
 
-	WebAddr = os.Getenv(variables[3])
-
-	if LogLevel, ok = os.LookupEnv(variables[4]); !ok {
+	if LogLevel, ok = os.LookupEnv(variables[2]); !ok {
 		LogLevel = "info"
 	}
 

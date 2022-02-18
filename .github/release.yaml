@@ -1,0 +1,33 @@
+on:
+  release:
+    types: [created]
+
+name: Release
+
+jobs:
+  release:
+    name: Release Go Binary
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: ["amd64", "arm64", "386"]
+        exclude:
+          - goarch: arm64
+            goos: windows
+          - goarch: "386"
+            goos: darwin
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: wangyoucao577/go-release-action@v1.22
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: 1.17
+          binary_name: trust
+          executable_compression: upx
+          ldflags: -s -w
+        env:
+          CGO_ENABLED: 0

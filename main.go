@@ -41,14 +41,14 @@ func main() {
 
 	registry.MustRegister(collector.NewScheduledEventsCollector(errors, timeout))
 
-	http.Handle(settings.WebPath, promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
+	http.Handle("/metrics", promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(`<html>
 			<head><title>Hasura Exporter</title></head>
 			<body>
 			<h1>Hasura Exporter</h1>
-			<p><a href="` + settings.WebAddr + `">Metrics</a></p>
+			<p><a href="` + settings.WebAddr + `/metrics">Metrics</a></p>
 			</body>
 			</html>`))
 	})
