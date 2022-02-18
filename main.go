@@ -39,6 +39,8 @@ func main() {
 
 	registry.MustRegister(collector.NewCronTriggerCollector(errors, timeout))
 
+	registry.MustRegister(collector.NewScheduledEventsCollector(errors, timeout))
+
 	http.Handle(settings.WebPath, promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

@@ -13,7 +13,7 @@ import (
 	"github.com/zolamk/hasura-exporter/settings"
 )
 
-type CronTriggerCollector struct {
+type ScheduledEventsCollector struct {
 	errors     *prometheus.CounterVec
 	timeout    time.Duration
 	Pending    *prometheus.Desc
@@ -22,50 +22,48 @@ type CronTriggerCollector struct {
 	Failed     *prometheus.Desc
 }
 
-func NewCronTriggerCollector(errors *prometheus.CounterVec, timeout time.Duration) *CronTriggerCollector {
+func NewScheduledEventsCollector(errors *prometheus.CounterVec, timeout time.Duration) *ScheduledEventsCollector {
 
-	labels := []string{
-		"trigger_name",
-	}
+	labels := []string{}
 
-	return &CronTriggerCollector{
+	return &ScheduledEventsCollector{
 		errors:  errors,
 		timeout: timeout,
 		Pending: prometheus.NewDesc(
-			"hasura_pending_cron_triggers",
-			"number of pending hasura cron triggers",
+			"hasura_pending_one_off_events",
+			"number of pending hasura one off scheduled events",
 			labels,
 			nil,
 		),
 		Processed: prometheus.NewDesc(
-			"hasura_processed_cron_triggers",
-			"number of processed hasura cron triggers",
+			"hasura_processed_one_off_events",
+			"number of processed hasura one off scheduled events",
 			labels,
 			nil,
 		),
 		Successful: prometheus.NewDesc(
-			"hasura_successful_cron_triggers",
-			"number of successfully processed hasura cron triggers",
+			"hasura_successful_one_off_events",
+			"number of successfully processed hasura one off scheduled events",
 			labels,
 			nil,
 		),
 		Failed: prometheus.NewDesc(
-			"hasura_failed_cron_triggers",
-			"number of failed hasura cron triggers",
+			"hasura_failed_one_off_events",
+			"number of failed hasura one off scheduled events",
 			labels,
 			nil,
 		),
 	}
 }
 
-func (c *CronTriggerCollector) Describe(ch chan<- *prometheus.Desc) {
+func (c *ScheduledEventsCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.Pending
 	ch <- c.Processed
 	ch <- c.Successful
 	ch <- c.Failed
 }
 
-func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
+func (c *ScheduledEventsCollector) Collect(ch chan<- prometheus.Metric) {
 
 	var err error
 
@@ -79,7 +77,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 				"args": map[string]interface{}{
 					"cascade":   false,
 					"read_only": true,
-					"sql":       "SELECT COUNT(*), trigger_name FROM hdb_catalog.hdb_cron_events WHERE status = 'error' GROUP BY trigger_name;",
+					"sql":       "SELECT COUNT(*) FROM hdb_catalog.hdb_scheduled_events WHERE status = 'error';",
 				},
 			},
 			{
@@ -87,7 +85,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 				"args": map[string]interface{}{
 					"cascade":   false,
 					"read_only": true,
-					"sql":       "SELECT COUNT(*), trigger_name FROM hdb_catalog.hdb_cron_events WHERE status = 'delivered' GROUP BY trigger_name;",
+					"sql":       "SELECT COUNT(*) FROM hdb_catalog.hdb_scheduled_events WHERE status = 'delivered';",
 				},
 			},
 			{
@@ -95,7 +93,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 				"args": map[string]interface{}{
 					"cascade":   false,
 					"read_only": true,
-					"sql":       "SELECT COUNT(*), trigger_name FROM hdb_catalog.hdb_cron_events WHERE status = 'scheduled' GROUP BY trigger_name;",
+					"sql":       "SELECT COUNT(*) FROM hdb_catalog.hdb_scheduled_events WHERE status = 'scheduled';",
 				},
 			},
 			{
@@ -103,7 +101,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 				"args": map[string]interface{}{
 					"cascade":   false,
 					"read_only": true,
-					"sql":       "SELECT COUNT(*), trigger_name FROM hdb_catalog.hdb_cron_events WHERE status = 'error' or status = 'delivered' GROUP BY trigger_name;",
+					"sql":       "SELECT COUNT(*) FROM hdb_catalog.hdb_cron_events WHERE status = 'error' or status = 'delivered';",
 				},
 			},
 		},
@@ -113,7 +111,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 	if err != nil {
 
-		c.errors.WithLabelValues("cron").Add(1)
+		c.errors.WithLabelValues("scheduled").Add(1)
 
 		logrus.WithField("err", err).Error("can't get event data")
 
@@ -129,7 +127,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 	if err != nil {
 
-		c.errors.WithLabelValues("cron").Add(1)
+		c.errors.WithLabelValues("scheduled").Add(1)
 
 		logrus.WithField("err", err).Error("can't get event data")
 
@@ -143,7 +141,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		res.Body.Read(body)
 
-		c.errors.WithLabelValues("cron").Add(1)
+		c.errors.WithLabelValues("scheduled").Add(1)
 
 		logrus.WithField("status_code", res.StatusCode).WithField("response_body", string(body)).Error("can't get event data")
 
@@ -162,7 +160,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 	if err != nil {
 
-		c.errors.WithLabelValues("cron").Add(1)
+		c.errors.WithLabelValues("scheduled").Add(1)
 
 		logrus.WithField("err", err).Error("can't get event data")
 
@@ -180,7 +178,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		if err != nil {
 
-			c.errors.WithLabelValues("cron").Add(1)
+			c.errors.WithLabelValues("scheduled").Add(1)
 
 			logrus.WithField("err", err).Error("error converting count string to float")
 
@@ -192,7 +190,6 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 			c.Failed,
 			prometheus.GaugeValue,
 			v,
-			result[1],
 		)
 
 	}
@@ -207,7 +204,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		if err != nil {
 
-			c.errors.WithLabelValues("cron").Add(1)
+			c.errors.WithLabelValues("scheduled").Add(1)
 
 			logrus.WithField("err", err).Error("error converting count string to float")
 
@@ -219,7 +216,6 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 			c.Successful,
 			prometheus.GaugeValue,
 			v,
-			result[1],
 		)
 
 	}
@@ -234,7 +230,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		if err != nil {
 
-			c.errors.WithLabelValues("cron").Add(1)
+			c.errors.WithLabelValues("scheduled").Add(1)
 
 			logrus.WithField("err", err).Error("error converting count string to float")
 
@@ -246,7 +242,6 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 			c.Pending,
 			prometheus.GaugeValue,
 			v,
-			result[1],
 		)
 
 	}
@@ -261,7 +256,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		if err != nil {
 
-			c.errors.WithLabelValues("event").Add(1)
+			c.errors.WithLabelValues("scheduled").Add(1)
 
 			logrus.WithField("err", err).Error("error converting count string to float")
 
@@ -273,7 +268,6 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 			c.Processed,
 			prometheus.GaugeValue,
 			v,
-			result[1],
 		)
 
 	}
