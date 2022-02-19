@@ -2,11 +2,17 @@
 
 Prometheus exporter for metrics about your [Hasura](https://hasura.io) GraphQL Server.
 
+## Supported Hasura Versions
+
+This exporter has been tested on hasura versions starting from `v2.0.0`
+
+## Requirements
+
+Your hasura graphql server needs to have the [metadata](https://hasura.io/docs/latest/graphql/core/api-reference/metadata-api/index.html) and [schema](https://hasura.io/docs/latest/graphql/core/api-reference/schema-api/index.html) APIs enabled, the APIs are enabled by default unless have been enabled
+
 ## Installation
 
-For pre-built binaries please take a look at the releases.
-[https://github.com/zolamk/hasura-exporter](https://github.com/zolamk/hasura-exporter)
-
+For pre-built binaries please take a look at the [releases](https://github.com/zolamk/hasura-exporter)
 ## Configuration
 
 | ENV Variable                | Description                                                               |
