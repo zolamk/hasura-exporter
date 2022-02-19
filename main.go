@@ -41,6 +41,8 @@ func main() {
 
 	registry.MustRegister(collector.NewScheduledEventsCollector(errors, timeout))
 
+	registry.MustRegister(collector.NewHealthcheckCollector(errors, timeout))
+
 	http.Handle("/metrics", promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
