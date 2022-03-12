@@ -53,7 +53,7 @@ func (c *MetadataCollector) Collect(ch chan<- prometheus.Metric) {
 
 	if err != nil {
 		c.errors.WithLabelValues("metadata").Add(1)
-		logrus.WithField("err", err).Error("can't get metadata status")
+		logrus.WithField("err", err).Error("[metadata] can't get metadata status")
 		return
 	}
 
@@ -65,7 +65,7 @@ func (c *MetadataCollector) Collect(ch chan<- prometheus.Metric) {
 
 	if err != nil {
 		c.errors.WithLabelValues("metadata").Add(1)
-		logrus.WithField("err", err).Error("can't get metadata status")
+		logrus.WithField("err", err).Error("[metadata] can't get metadata status")
 		return
 	}
 
@@ -77,7 +77,7 @@ func (c *MetadataCollector) Collect(ch chan<- prometheus.Metric) {
 
 		c.errors.WithLabelValues("metadata").Add(1)
 
-		logrus.WithField("status_code", res.StatusCode).WithField("response_body", string(body)).Error("can't get metadata status")
+		logrus.WithField("status_code", res.StatusCode).WithField("response_body", string(body)).Error("[metadata] can't get metadata status")
 
 		return
 
@@ -94,7 +94,7 @@ func (c *MetadataCollector) Collect(ch chan<- prometheus.Metric) {
 
 	if err != nil {
 		c.errors.WithLabelValues("metadata").Add(1)
-		logrus.WithField("err", err).Error("can't get metadata status")
+		logrus.WithField("err", err).Error("[metadata] can't get metadata status")
 		return
 	}
 

@@ -46,7 +46,7 @@ func (c *HealthcheckCollector) Collect(ch chan<- prometheus.Metric) {
 
 	if err != nil {
 		c.errors.WithLabelValues("health").Add(1)
-		logrus.WithField("err", err).Error("can't get health status")
+		logrus.WithField("err", err).Error("[healthcheck] can't get health status")
 		return
 	}
 
@@ -54,7 +54,7 @@ func (c *HealthcheckCollector) Collect(ch chan<- prometheus.Metric) {
 
 	if err != nil {
 		c.errors.WithLabelValues("health").Add(1)
-		logrus.WithField("err", err).Error("can't get health status")
+		logrus.WithField("err", err).Error("[healthcheck] can't get health status")
 		return
 	}
 
@@ -68,7 +68,7 @@ func (c *HealthcheckCollector) Collect(ch chan<- prometheus.Metric) {
 
 		c.errors.WithLabelValues("health").Add(1)
 
-		logrus.WithField("status_code", res.StatusCode).Error("can't get metadata status")
+		logrus.WithField("status_code", res.StatusCode).Error("[healthcheck] can't get metadata status")
 
 		return
 
