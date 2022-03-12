@@ -112,43 +112,32 @@ func (c *EventTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 	req, err := http.NewRequest("POST", query_api_url, bytes.NewReader(body))
 
 	if err != nil {
-
 		c.errors.WithLabelValues("event").Add(1)
-
-		logrus.WithField("err", err).Error("can't get event data")
-
+		logrus.WithField("err", err).Error("[event_trigger] can't get event data")
 		return
-
 	}
 
 	req.Header.Add("content-type", "application/json")
-
 	req.Header.Add("x-hasura-admin-secret", settings.HasuraAdminSecret)
 
 	res, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-
 		c.errors.WithLabelValues("event").Add(1)
-
-		logrus.WithField("err", err).Error("can't get event data")
+		logrus.WithField("err", err).Error("[event_trigger] can't get event data")
 
 		return
-
 	}
 
 	if res.StatusCode != http.StatusOK {
-
 		var body []byte
 
 		res.Body.Read(body)
 
 		c.errors.WithLabelValues("event").Add(1)
-
-		logrus.WithField("status_code", res.StatusCode).WithField("response_body", string(body)).Error("can't get event data")
+		logrus.WithField("status_code", res.StatusCode).WithField("response_body", string(body)).Error("[event_triggers] Maybe you do not have hdb_catalog.event_log")
 
 		return
-
 	}
 
 	var data []struct {
@@ -164,7 +153,7 @@ func (c *EventTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		c.errors.WithLabelValues("event").Add(1)
 
-		logrus.WithField("err", err).Error("can't get event data")
+		logrus.WithField("err", err).Error("[event_triggers] can't get event data")
 
 		return
 
