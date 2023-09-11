@@ -161,7 +161,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		c.errors.WithLabelValues("cron").Add(1)
 
-		logrus.WithField("err", err).Error("[cront_triggers] can't get event data")
+		logrus.WithField("err", err).Error("[cron_triggers] can't get event data")
 
 		return
 

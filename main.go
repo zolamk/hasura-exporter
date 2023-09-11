@@ -50,13 +50,13 @@ func main() {
 			<head><title>Hasura Exporter</title></head>
 			<body>
 			<h1>Hasura Exporter</h1>
-			<p><a href="` + settings.Port + `/metrics">Metrics</a></p>
+			<p><a href="` + settings.WebAddr + `/metrics">Metrics</a></p>
 			</body>
 			</html>`))
 	})
 
-	logrus.Info("started hasura exporter on ", settings.Port)
+	logrus.Info("started hasura exporter on ", settings.WebAddr)
 
-	logrus.WithField("msg", http.ListenAndServe(":"+settings.Port, nil)).Fatalln()
+	logrus.WithField("msg", http.ListenAndServe(settings.WebAddr, nil)).Fatalln()
 
 }
