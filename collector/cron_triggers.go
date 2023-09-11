@@ -66,7 +66,6 @@ func (c *CronTriggerCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
-
 	var err error
 
 	query_api_url := fmt.Sprintf("%s/v2/query", settings.HasuraGraphQLEndpoint)
@@ -112,17 +111,15 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 	req, err := http.NewRequest("POST", query_api_url, bytes.NewReader(body))
 
 	if err != nil {
-
 		c.errors.WithLabelValues("cron").Add(1)
 
-		logrus.WithField("err", err).Error("can't get event data")
+		logrus.WithField("err", err).Error("[cron_triggers] can't get event data")
 
 		return
 
 	}
 
 	req.Header.Add("content-type", "application/json")
-
 	req.Header.Add("x-hasura-admin-secret", settings.HasuraAdminSecret)
 
 	res, err := http.DefaultClient.Do(req)
@@ -131,7 +128,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		c.errors.WithLabelValues("cron").Add(1)
 
-		logrus.WithField("err", err).Error("can't get event data")
+		logrus.WithField("err", err).Error("[cron_triggers] can't get event data")
 
 		return
 
@@ -145,7 +142,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		c.errors.WithLabelValues("cron").Add(1)
 
-		logrus.WithField("status_code", res.StatusCode).WithField("response_body", string(body)).Error("can't get event data")
+		logrus.WithField("status_code", res.StatusCode).WithField("response_body", string(body)).Error("[cron_triggers] can't get event data")
 
 		return
 
@@ -164,7 +161,7 @@ func (c *CronTriggerCollector) Collect(ch chan<- prometheus.Metric) {
 
 		c.errors.WithLabelValues("cron").Add(1)
 
-		logrus.WithField("err", err).Error("can't get event data")
+		logrus.WithField("err", err).Error("[cron_triggers] can't get event data")
 
 		return
 
