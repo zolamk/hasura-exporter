@@ -1,0 +1,51 @@
+name: Build Docker Image
+on:
+  pull_request:
+    branches: [ main]
+  push:
+    branches: [ main]
+
+# https://docs.github.com/en/actions/quickstart
+# https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # need to create an environment variable with org + repo in lowercase not HabitatEnergy
+      - name: downcase REPO
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
+      - name: Setup Go environment
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.*
+          check-latest: true
+
+      # 🤓 https://github.com/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+        with:
+          # fetch-depth: 0
+          path: ''
+
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: latest
+          #tags: $REPO:$(date +%s), $REPO:latest
+
+
+      - name: Build and publish a Docker image for ${{ github.repository }}
+        uses: macbre/push-to-ghcr@master
+        with:
+          image_name: ${{ github.repository }}  # it will be lowercased internally
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
